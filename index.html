@@ -34,6 +34,7 @@
     margin-bottom: 20px;
     text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
     z-index: 3;
+    transition: transform 0.6s ease, opacity 1.5s ease;
   }
 
   .thought {
@@ -56,13 +57,8 @@
     animation-fill-mode: forwards;
   }
 
-  .fadeIn {
-    animation: fadeInText 4s ease forwards;
-  }
-
-  .fadeInSlow {
-    animation: fadeInText 7s ease forwards;
-  }
+  .fadeIn { animation: fadeInText 4s ease forwards; }
+  .fadeInSlow { animation: fadeInText 7s ease forwards; }
 
   @keyframes fadeInText {
     0% { opacity: 0; filter: blur(5px); }
@@ -150,7 +146,6 @@
     transform: translateX(-50%);
   }
 
-  /* Explosion petals */
   .petal {
     position: absolute;
     top: -10px;
@@ -205,7 +200,6 @@
     100% { bottom: 40px; opacity: 1; }
   }
 
-  /* I love you fade in */
   .final-message {
     position: absolute;
     font-size: 42px;
@@ -228,7 +222,7 @@
 
 <div class="sun"></div>
 
-<h1>Happy Birthday Love! 💖</h1>
+<h1 id="title">Happy Birthday Love! 💖</h1>
 
 <div class="thought fadeIn" id="thoughtBubble">
   Press to start 💬
@@ -253,7 +247,7 @@
 </audio>
 
 <script>
-  // 🌸 More petals
+  // 🌸 Create petals
   function createPetal() {
     const petal = document.createElement("div");
     petal.classList.add("petal");
@@ -264,10 +258,15 @@
     document.body.appendChild(petal);
     setTimeout(() => petal.remove(), 10000);
   }
-  setInterval(createPetal, 250); // doubled petal frequency 🌸🌸
+  setInterval(createPetal, 250);
 
+  const title = document.getElementById("title");
   const thoughtBubble = document.getElementById("thoughtBubble");
   const coffeeCup = document.getElementById("coffeeCup");
+  const voiceBtn = document.getElementById("voiceBtn");
+  const voiceAudio = document.getElementById("voiceAudio");
+  const bgMusic = document.getElementById("bgMusic");
+
   const messages = [
     "Press to start 💬",
     "Hey Love, happy birthday. I hope your day is filled with laughter, joy, and everything that makes you happiest.",
@@ -277,10 +276,6 @@
     "I know we’re not talking like we used to, and maybe things didn’t turn out the way I hoped. But I wanted you to know that knowing you, even for a little while, has been one of the best things in my life.",
     "So on your birthday, I just want to wish you all the happiness in the world. And… I’ve left a little something for you to hear, from me to you."
   ];
-
-  const voiceBtn = document.getElementById("voiceBtn");
-  const voiceAudio = document.getElementById("voiceAudio");
-  const bgMusic = document.getElementById("bgMusic");
 
   let currentIndex = 0;
   let started = false;
@@ -292,13 +287,10 @@
 
   function showMessage(index) {
     thoughtBubble.classList.remove("fadeIn", "fadeInSlow");
-    void thoughtBubble.offsetWidth; // reset animation
+    void thoughtBubble.offsetWidth;
     thoughtBubble.textContent = messages[index];
-    if (index === 1) {
-      thoughtBubble.classList.add("fadeInSlow"); // 7s fade for first message
-    } else {
-      thoughtBubble.classList.add("fadeIn");
-    }
+    if (index === 1) thoughtBubble.classList.add("fadeInSlow");
+    else thoughtBubble.classList.add("fadeIn");
   }
 
   thoughtBubble.addEventListener("click", () => {
@@ -323,21 +315,24 @@
     }
   });
 
-  // 💥 Coffee explosion + "I love you"
+  // 💥 Explosion: coffee + title + voice button
   voiceBtn.addEventListener("click", () => {
     voiceAudio.play();
     voiceBtn.textContent = "Playing 🎧";
     voiceBtn.disabled = true;
 
     voiceAudio.onended = () => {
-      // Coffee explode animation
+      // explode all
       coffeeCup.style.transform = "scale(1.3) rotate(20deg)";
       coffeeCup.style.opacity = "0";
-      for (let i = 0; i < 30; i++) {
-        setTimeout(createPetal, i * 100); // burst of petals
-      }
+      title.style.transform = "scale(1.3)";
+      title.style.opacity = "0";
+      voiceBtn.style.transform = "scale(1.3)";
+      voiceBtn.style.opacity = "0";
 
-      // Show final message
+      for (let i = 0; i < 80; i++) setTimeout(createPetal, i * 30);
+
+      // show I love you
       setTimeout(() => {
         const loveMsg = document.createElement("div");
         loveMsg.classList.add("final-message");
